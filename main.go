@@ -28,6 +28,7 @@ func createNote() {
 	print(input)
 	file.Close()
 }
+
 func readNote() {
 	file, err := os.Open("note2.txt")
 	if err != nil {
@@ -44,7 +45,18 @@ func readNote() {
 }
 
 func writetoNote() {
-
+	f, err := os.Create("note2.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	l, err := f.WriteString("write to note")
+	if err != nil {
+		fmt.Println(err)
+		f.Close()
+		return
+	}
+	fmt.Println(l, "bytes written successfully")
 }
 
 func editNote() {
@@ -59,4 +71,5 @@ func main() {
 	//ask user what they want to do
 	createNote()
 	readNote()
+	writetoNote()
 }
