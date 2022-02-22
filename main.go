@@ -3,14 +3,19 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 )
 
 func createNote() {
-	file, err := os.Create("note1.txt")
+	// be able to create note name
+	// multiple line notes?
+	file, err := os.Create("note2.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter note: ")
 	text, _ := reader.ReadString('\n')
@@ -19,13 +24,39 @@ func createNote() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	print(input)
 
+	print(input)
 	file.Close()
-	content, err := os.ReadFile("note1.txt")
-	fmt.Print(content)
+}
+func readNote() {
+	file, err := os.Open("note2.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+	b, err := ioutil.ReadAll(file)
+	myString := string(b[:])
+	fmt.Print("\n", myString)
+}
+
+func writetoNote() {
+
+}
+
+func editNote() {
+
+}
+
+func removeNote() {
+
 }
 
 func main() {
+	//ask user what they want to do
 	createNote()
+	readNote()
 }
