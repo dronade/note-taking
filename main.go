@@ -71,11 +71,18 @@ func editNote() {
 }
 
 func removeNote() {
+	err := os.Remove("note3.txt")
 
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func main() {
 	//ask user what they want to do
+	
+	//removeNote()
 	createNote()
 	readNote()
 	writetoNote()
