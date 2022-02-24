@@ -81,10 +81,26 @@ func removeNote() {
 
 func main() {
 	//ask user what they want to do
-	
-	//removeNote()
-	createNote()
-	readNote()
-	writetoNote()
-	editNote()
+	//get user input
+	fmt.Print("Enter what you want to do: ")
+	var userInput string
+	fmt.Scanf("%s", &userInput)
+
+	switch userInput {
+	case "create":
+		createNote()
+	case "read":
+		readNote()
+	case "write":
+		writetoNote()
+	case "edit":
+		editNote()
+	case "remove":
+		removeNote()
+	default:
+		fmt.Println("invalid command")
+	}
+	defer func() {
+
+	}()
 }
