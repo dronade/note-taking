@@ -11,7 +11,7 @@ import (
 func createNote() {
 	// be able to create note name
 	// multiple line notes?
-	file, err := os.Create("note2.txt")
+	file, err := os.Create("note3.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -45,22 +45,29 @@ func readNote() {
 }
 
 func writetoNote() {
-	f, err := os.Create("note2.txt")
+	file, err := os.Create("note2.txt")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	l, err := f.WriteString("write to note")
+	l, err := file.WriteString("write to note")
 	if err != nil {
 		fmt.Println(err)
-		f.Close()
+		file.Close()
 		return
 	}
 	fmt.Println(l, "bytes written successfully")
 }
 
 func editNote() {
-
+	file, err := os.OpenFile("note1.txt", os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+	}
+	defer file.Close()
+	if _, err := file.WriteString("\nfifth line"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func removeNote() {
@@ -72,4 +79,5 @@ func main() {
 	createNote()
 	readNote()
 	writetoNote()
+	editNote()
 }
