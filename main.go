@@ -88,7 +88,7 @@ func main() {
 
 	switch userInput {
 	case "create":
-		createNote()
+		defer createNote()
 	case "read":
 		readNote()
 	case "write":
@@ -100,7 +100,4 @@ func main() {
 	default:
 		fmt.Println("invalid command")
 	}
-	defer func() {
-
-	}()
 }
