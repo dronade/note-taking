@@ -1,33 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 )
-
-func createNote() {
-	// be able to create note name
-	// multiple line notes?
-	file, err := os.Create("note3.txt")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter note: ")
-	text, _ := reader.ReadString('\n')
-
-	input, err := file.WriteString(text)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	print(input)
-	file.Close()
-}
 
 func readNote() {
 	file, err := os.Open("note2.txt")
@@ -70,34 +48,25 @@ func editNote() {
 	}
 }
 
-func removeNote() {
-	err := os.Remove("note3.txt")
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-}
-
 func main() {
 	//ask user what they want to do
 	//get user input
-	fmt.Print("Enter what you want to do: ")
-	var userInput string
-	fmt.Scanf("%s", &userInput)
+	// fmt.Print("Enter what you want to do: ")
+	// var userInput string
+	// fmt.Scanf("%s", &userInput)
 
-	switch userInput {
-	case "create":
-		defer createNote()
-	case "read":
-		readNote()
-	case "write":
-		writetoNote()
-	case "edit":
-		editNote()
-	case "remove":
-		removeNote()
-	default:
-		fmt.Println("invalid command")
-	}
+	// switch userInput {
+	// case "create":
+	// 	defer createNote()
+	// case "read":
+	// 	readNote()
+	// case "write":
+	// 	writetoNote()
+	// case "edit":
+	// 	editNote()
+	// case "remove":
+	// 	removeNote()
+	// default:
+	// 	fmt.Println("invalid command")
+	// }
 }
