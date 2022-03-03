@@ -7,7 +7,12 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 )
-//need to add date created
+
+// need to add date created
+// allow user to add title and content
+// allow deletion from table
+// allow a user to delete
+// decide how to go about implementing the frontend
 
 func main() {
 	os.Remove("sqlite-database.db")
@@ -69,6 +74,6 @@ func displayNotes(db *sql.DB) {
 		var title string
 		var content string
 		row.Scan(&id, &title, &content)
-		log.Println("note: ", title, " ", content, " ",)
+		log.Println("note: ", title, " ", content, " ")
 	}
 }
