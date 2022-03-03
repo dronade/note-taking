@@ -1,72 +1,74 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	"database/sql"
 	"log"
 	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
-
-func readNote() {
-	file, err := os.Open("note2.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func() {
-		if err = file.Close(); err != nil {
-			log.Fatal(err)
-		}
-	}()
-	b, err := ioutil.ReadAll(file)
-	myString := string(b[:])
-	fmt.Print("\n", myString)
-}
-
-func writetoNote() {
-	file, err := os.Create("note2.txt")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	l, err := file.WriteString("write to note")
-	if err != nil {
-		fmt.Println(err)
-		file.Close()
-		return
-	}
-	fmt.Println(l, "bytes written successfully")
-}
-
-func editNote() {
-	file, err := os.OpenFile("note1.txt", os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Println(err)
-	}
-	defer file.Close()
-	if _, err := file.WriteString("\nfifth line"); err != nil {
-		log.Fatal(err)
-	}
-}
+//need to add date created
 
 func main() {
-	//ask user what they want to do
-	//get user input
-	// fmt.Print("Enter what you want to do: ")
-	// var userInput string
-	// fmt.Scanf("%s", &userInput)
+	os.Remove("sqlite-database.db")
 
-	// switch userInput {
-	// case "create":
-	// 	defer createNote()
-	// case "read":
-	// 	readNote()
-	// case "write":
-	// 	writetoNote()
-	// case "edit":
-	// 	editNote()
-	// case "remove":
-	// 	removeNote()
-	// default:
-	// 	fmt.Println("invalid command")
-	// }
+	log.Println("Creating sqlite-database.db...")
+	file, err := os.Create("sqlite-database.db")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	file.Close()
+	log.Println("sqlite-database.db created")
+
+	sqliteDatabase, _ := sql.Open("sqlite3", "./sqlite-database.db")
+	defer sqliteDatabase.Close()
+	createTable(sqliteDatabase)
+	insertNote(sqliteDatabase, "very important stuff!!!", "this, this, this and this")
+	insertNote(sqliteDatabase, "blah", "blh blah blah blah blah")
+	insertNote(sqliteDatabase, "ahem", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam accumsan lobortis arcu, rhoncus cursus augue malesuada in. Sed eget bibendum magna")
+	displayNotes(sqliteDatabase)
+}
+
+func createTable(db *sql.DB) {
+	createNoteTableSQL := `CREATE TABLE notes (
+		"idNote" integer NOT NULL PRIMARY KEY AUTOINCREMENT,		
+		"title" TEXT,
+		"content" TEXT		
+	  );`
+
+	log.Println("create notes table")
+	statement, err := db.Prepare(createNoteTableSQL)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	statement.Exec()
+	log.Println("notes table created")
+}
+
+func insertNote(db *sql.DB, title string, content string) {
+	log.Println("inserting notes")
+	insertNoteSQL := `INSERT INTO notes(title, content) VALUES (?, ?)`
+	statement, err := db.Prepare(insertNoteSQL)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	_, err = statement.Exec(title, content)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+}
+
+func displayNotes(db *sql.DB) {
+	row, err := db.Query("SELECT * FROM notes ORDER BY title")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+	for row.Next() {
+		var id int
+		var title string
+		var content string
+		row.Scan(&id, &title, &content)
+		log.Println("note: ", title, " ", content, " ",)
+	}
 }
