@@ -11,6 +11,7 @@ import (
 // need to add date created
 // allow user to add title and content
 // allow deletion from table
+// allow user to edit title and content
 // allow a user to delete
 // decide how to go about implementing the frontend
 
@@ -31,6 +32,8 @@ func main() {
 	insertNote(sqliteDatabase, "very important stuff!!!", "this, this, this and this")
 	insertNote(sqliteDatabase, "blah", "blh blah blah blah blah")
 	insertNote(sqliteDatabase, "ahem", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam accumsan lobortis arcu, rhoncus cursus augue malesuada in. Sed eget bibendum magna")
+	insertNote(sqliteDatabase, "to be deleted", "if this is stil in the table something's gone wrong :(")
+	deleteNote(sqliteDatabase)
 	displayNotes(sqliteDatabase)
 }
 
@@ -75,5 +78,18 @@ func displayNotes(db *sql.DB) {
 		var content string
 		row.Scan(&id, &title, &content)
 		log.Println("note: ", title, " ", content, " ")
+	}
+}
+
+func deleteNote(db *sql.DB) {
+	log.Println("deleting note")
+	deleteNoteSQL := `DELETE FROM notes WHERE title="to be deleted"`
+	statement, err := db.Prepare(deleteNoteSQL)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	_, err = statement.Exec()
+	if err != nil {
+		log.Fatalln(err.Error())
 	}
 }
