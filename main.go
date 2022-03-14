@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/andlabs/ui"
+	_ "github.com/andlabs/ui/winmanifest"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -16,6 +18,7 @@ import (
 // decide how to go about implementing the frontend
 
 func main() {
+	ui.Main(setupUI)
 	os.Remove("sqlite-database.db")
 
 	log.Println("Creating sqlite-database.db...")
@@ -35,6 +38,74 @@ func main() {
 	insertNote(sqliteDatabase, "to be deleted", "if this is stil in the table something's gone wrong :(")
 	deleteNote(sqliteDatabase)
 	displayNotes(sqliteDatabase)
+}
+
+var mainwin *ui.Window
+
+func makeCreateNotePage() ui.Control {
+	vbox := ui.NewVerticalBox()
+	vbox.SetPadded(true)
+
+	hbox := ui.NewHorizontalBox()
+	hbox.SetPadded(true)
+	vbox.Append(hbox, false)
+
+	vbox.Append(ui.NewHorizontalSeparator(), false)
+
+	group := ui.NewGroup("")
+	group.SetMargined(true)
+	vbox.Append(group, true)
+
+	group.SetChild(ui.NewNonWrappingMultilineEntry())
+
+	entryForm := ui.NewForm()
+	entryForm.SetPadded(true)
+	group.SetChild(entryForm)
+
+	entryForm.Append("Title", ui.NewEntry(), false)
+	entryForm.Append("Enter Note:", ui.NewMultilineEntry(), true)
+	vbox.Append(ui.NewButton("Create", ), false)
+
+	return vbox
+}
+
+func makeViewNotePage() ui.Control {
+	hbox := ui.NewHorizontalBox()
+	hbox.SetPadded(true)
+
+	group := ui.NewGroup("")
+	group.SetMargined(true)
+	hbox.Append(group, true)
+
+	vbox := ui.NewVerticalBox()
+	vbox.SetPadded(true)
+	group.SetChild(vbox)
+
+	return hbox
+}
+
+func setupUI() {
+	mainwin = ui.NewWindow("Note taking app", 640, 480, true)
+	mainwin.OnClosing(func(*ui.Window) bool {
+		ui.Quit()
+		return true
+	})
+	ui.OnShouldQuit(func() bool {
+		mainwin.Destroy()
+		return true
+	})
+
+	tab := ui.NewTab()
+	mainwin.SetChild(tab)
+	mainwin.SetMargined(true)
+
+	tab.Append("Create Note", makeCreateNotePage())
+	tab.SetMargined(0, true)
+
+	tab.Append("View Notes", makeViewNotePage())
+	tab.SetMargined(1, true)
+
+	mainwin.Show()
 }
 
 func createTable(db *sql.DB) {
